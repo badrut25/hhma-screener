@@ -15,31 +15,55 @@
         .container {
             max-width: 1200px;
             margin: auto;
+            overflow-x: auto;
         }
         h1 { 
             text-align: center; 
             color: #00ffaa; 
         }
-        .chart-box { 
-            background-color: #1e222d; 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin-bottom: 30px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-        }
-        .error-msg {
-            color: #ff4444;
+        .subtitle {
             text-align: center;
-            padding: 10px;
+            color: #888;
+            margin-bottom: 30px;
         }
+        /* DESAIN TABEL PROFESIONAL */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1e222d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #2a2e39;
+        }
+        th {
+            background-color: #2a2e39;
+            color: #00ffaa;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+        tr:hover {
+            background-color: #293040;
+            transition: 0.3s;
+        }
+        .buy-text { color: #00ffaa; font-weight: bold; }
+        .sell-text { color: #ff4444; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>👑 HHMA Strategy Dashboard (Manual Update)</h1>
+        <h1>👑 HHMA Strategy Screener</h1>
+        <div class="subtitle">Hasil Screening Otomatis (Update Manual)</div>
         
-        <!-- MESIN PYTHON AKAN MENARUH GRAFIK TEPAT DI BAWAH TULISAN INI -->
-        <!-- CHARTS_GO_HERE -->
+        <!-- TABEL AKAN DIMASUKKAN DI SINI -->
+        <!-- TABLE_GOES_HERE -->
         
     </div>
 </body>
