@@ -1,6 +1,5 @@
 import yfinance as yf
 import pandas as pd
-import pandas_ta as ta
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -83,7 +82,8 @@ class Config:
             "YUPI", "FORE", "MDLA", "DKHH", "PSAT", "CDIA", "COIN", "BLOG", "CHEK", "MERI", "ASPR", "PMUI", "EMAS", "PJHB",
             "RLCO", "SUPA"
         ]
-  
+
+    
     PERIOD = "1y"
     TEMPLATE_FILE = "template.html"
     OUTPUT_FILE = "index.html"
@@ -112,6 +112,11 @@ class Indicators:
         rawHull = 2 * fastSinh - slowSinh
         return f_sinh_weight(rawHull, sqrtLen, tension)
 
+    @staticmethod
+    def calc_ema(src_series, length):
+        """Kalkulasi EMA murni tanpa library eksternal"""
+        return src_series.ewm(span=length, adjust=False).mean()
+
 # ==========================================
 # CLASS 3: ANALISATOR SAHAM (PROSES 1 SAHAM)
 # ==========================================
@@ -134,8 +139,9 @@ class StockAnalyzer:
     def calculate_signals(self):
         """Menghitung semua indikator dan sinyal Buy/Sell"""
         self.df['HHMA'] = Indicators.calc_hhma(self.df['Close'])
-        self.df['EMA9'] = ta.ema(self.df['Close'], length=9)
-        self.df['EMA21'] = ta.ema(self.df['Close'], length=21)
+        # Menggunakan kalkulasi EMA murni (TIDAK butuh pandas_ta)
+        self.df['EMA9'] = Indicators.calc_ema(self.df['Close'], 9)
+        self.df['EMA21'] = Indicators.calc_ema(self.df['Close'], 21)
         
         # Logika Tren HHMA
         self.df['isBullish'] = self.df['HHMA'] > self.df['HHMA'].shift(1)
