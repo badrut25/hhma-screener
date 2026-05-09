@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>👑 Stock Screeners - HHMA</title>
+    <!-- Script TradingView Bawaan -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         body { 
             background-color: #131722; 
@@ -17,16 +19,10 @@
             margin: auto;
             overflow-x: auto;
         }
-        h1 { 
-            text-align: center; 
-            color: #00ffaa; 
-        }
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 30px;
-        }
-        /* DESAIN TABEL PROFESIONAL */
+        h1 { text-align: center; color: #00ffaa; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+        
+        /* DESAIN TABEL */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -46,25 +42,135 @@
             color: #00ffaa;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 14px;
+            font-size: 13px;
             letter-spacing: 1px;
+            cursor: pointer; /* Indikator bisa diklik */
+            user-select: none;
         }
-        tr:hover {
-            background-color: #293040;
-            transition: 0.3s;
-        }
+        th:hover { background-color: #363c4d; }
+        tr:hover { background-color: #293040; transition: 0.3s; }
         .buy-text { color: #00ffaa; font-weight: bold; }
         .sell-text { color: #ff4444; font-weight: bold; }
+
+        /* DESAIN MODAL (POPUP TRADINGVIEW) */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; top: 0; 
+            width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            background-color: #1e222d;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #00ffaa;
+            border-radius: 8px;
+            width: 80%;
+            height: 70vh;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover { color: #00ffaa; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>👑 HHMA Strategy Screener</h1>
-        <div class="subtitle">Hasil Screening Otomatis (Update Manual)</div>
+        <div class="subtitle">Klik Header Tabel untuk Sorting | Klik Ticker untuk Chart TradingView</div>
         
-        <!-- TABEL AKAN DIMASUKKAN DI SINI -->
         <!-- TABLE_GOES_HERE -->
         
     </div>
+
+    <!-- MODAL WIDGET TRADINGVIEW -->
+    <div id="tv-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="tv-widget-container" style="height: 100%; width: 100%;"></div>
+        </div>
+    </div>
+
+    <!-- SCRIPT JAVASCRIPT UNTUK SORTING & MODAL -->
+    <script>
+        // 1. FUNGSI WIDGET TRADINGVIEW
+        function openWidget(ticker) {
+            document.getElementById('tv-modal').style.display = "block";
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": "IDX:" + ticker,
+                "interval": "D",
+                "timezone": "Asia/Jakarta",
+                "theme": "dark",
+                "style": "1",
+                "locale": "id",
+                "enable_publishing": false,
+                "hide_top_toolbar": false,
+                "hide_legend": false,
+                "save_image": false,
+                "container_id": "tv-widget-container"
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('tv-modal').style.display = "none";
+            document.getElementById('tv-widget-container').innerHTML = ''; // Hapus chart lama
+        }
+
+        // 2. FUNGSI SORTING TABEL (MEMBACA DATA-VALUE TERSEMBUNYI)
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.querySelector("table");
+            switching = true;
+            dir = "asc"; 
+            
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    
+                    // Ambil angka mentah dari data-value (jika ada), jika tidak ambil teks biasa
+                    let xVal = x.getAttribute("data-value") !== null ? x.getAttribute("data-value") : x.textContent.toLowerCase();
+                    let yVal = y.getAttribute("data-value") !== null ? y.getAttribute("data-value") : y.textContent.toLowerCase();
+                    
+                    // Ubah jadi angka (float) agar desimal/minus dibaca dengan benar
+                    let xNum = parseFloat(xVal);
+                    let yNum = parseFloat(yVal);
+                    
+                    if (!isNaN(xNum) && !isNaN(yNum)) {
+                        xVal = xNum;
+                        yVal = yNum;
+                    }
+                    
+                    if (dir == "asc") {
+                        if (xVal > yVal) { shouldSwitch = true; break; }
+                    } else {
+                        if (xVal < yVal) { shouldSwitch = true; break; }
+                    }
+                }
+                
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount ++; 
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 </html>
