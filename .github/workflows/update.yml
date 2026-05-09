@@ -1,0 +1,33 @@
+name: Manual Update Screener Web
+
+on:
+  workflow_dispatch: # HANYA tombol Play Manual, tidak ada jadwal otomatis
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Library
+      run: pip install -r requirements.txt
+
+    - name: Jalankan Screener & Buat Web
+      run: python screener.py
+
+    - name: Simpan Web ke GitHub
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action Bot"
+        git add index.html
+        git commit -m "Manual Update Chart HHMA" || echo "Tidak ada perubahan"
+        git push
