@@ -1,0 +1,1815 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Stock Screeners - HHMA Strategy</title>
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+
+    <style>
+        body { background-color: #131722; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; margin: 0; }
+        .container { max-width: 1400px; margin: auto; }
+        h1 { text-align: center; color: #00ffaa; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 0.9em; }
+        
+        table.dataTable { width: 100% !important; background-color: #1e222d !important; color: white !important; border-radius: 8px; overflow: hidden; border: none !important; }
+        table.dataTable thead th { background-color: #2a2e39 !important; color: #00ffaa !important; white-space: nowrap; padding: 15px !important; border-bottom: 1px solid #3d4352 !important; }
+        table.dataTable tbody td { white-space: nowrap; padding: 12px 15px !important; border-bottom: 1px solid #2a2e39 !important; text-align: center !important; }
+        .dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select { color: white !important; background-color: #2a2e39 !important; border: 1px solid #3d4352 !important; padding: 5px; border-radius: 4px; }
+
+        /* MODAL WIDGET */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); }
+        .modal-content { background-color: #1e222d; margin: 2% auto; padding: 10px; border: 1px solid #00ffaa; border-radius: 8px; width: 90%; height: 85vh; position: relative; }
+        .close { position: absolute; right: 15px; top: 5px; color: #ff4444; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10001; background: #1e222d; padding: 0 10px; border-radius: 50%; }
+        .close:hover { color: #fff; background: #ff4444; }
+
+        .buy { color: #00ffaa; font-weight: bold; }
+        .sell { color: #ff4444; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👑 HHMA Strategy Screener</h1>
+        <div class="subtitle">Terakhir Diperbarui: 2026-05-10 08:04:54 UTC | Tahan SHIFT + Klik Header untuk Multiple Sort</div>
+        
+        <table id="screenerTable" class="display">
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Tanggal</th>
+                    <th>Pola</th>
+                    <th>Close</th>
+                    <th>% Ubah</th>
+                    <th>Volume</th>
+                    <th>Spike Vol?</th>
+                    <th>Warna Kernel</th>
+                    <th>PER</th>
+                    <th>PBV</th>
+                    <th>Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("AALI"); return false;' style='color:#00ffaa; font-weight:bold;'>AALI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='8050.0'>8,050</td>
+                    <td data-order='-3.592814371257485'><span style='color: #ff4444;'>-3.59%</span></td>
+                    <td data-order='2613200'>2.61M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='9.881423'>9.881423</td>
+                    <td data-order='0.65773696'>0.65773696</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("ADMF"); return false;' style='color:#00ffaa; font-weight:bold;'>ADMF</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='8675.0'>8,675</td>
+                    <td data-order='-0.5730659025787965'><span style='color: #ff4444;'>-0.57%</span></td>
+                    <td data-order='77100'>77.10K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='6.506169'>6.506169</td>
+                    <td data-order='0.70759326'>0.70759326</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("AGII"); return false;' style='color:#00ffaa; font-weight:bold;'>AGII</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='3030.0'>3,030</td>
+                    <td data-order='-1.6233766233766231'><span style='color: #ff4444;'>-1.62%</span></td>
+                    <td data-order='1823900'>1.82M</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='112.34705'>112.34705</td>
+                    <td data-order='2.4509566'>2.4509566</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("AKPI"); return false;' style='color:#00ffaa; font-weight:bold;'>AKPI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='545.0'>545</td>
+                    <td data-order='-2.6785714285714284'><span style='color: #ff4444;'>-2.68%</span></td>
+                    <td data-order='90400'>90.40K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='25.977121'>25.977121</td>
+                    <td data-order='0.18777789'>0.18777789</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("AMFG"); return false;' style='color:#00ffaa; font-weight:bold;'>AMFG</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='3280.0'>3,280</td>
+                    <td data-order='2.5'><span style='color: #00ffaa;'>2.50%</span></td>
+                    <td data-order='6500'>6.50K</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='17.921537'>17.921537</td>
+                    <td data-order='0.30425406'>0.30425406</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("ASRM"); return false;' style='color:#00ffaa; font-weight:bold;'>ASRM</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='286.0'>286</td>
+                    <td data-order='0.0'><span style='color: #ff4444;'>0.00%</span></td>
+                    <td data-order='9400'>9.40K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='16.89309'>16.89309</td>
+                    <td data-order='0.48023'>0.48023</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("AUTO"); return false;' style='color:#00ffaa; font-weight:bold;'>AUTO</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='2640.0'>2,640</td>
+                    <td data-order='0.38022813688212925'><span style='color: #00ffaa;'>0.38%</span></td>
+                    <td data-order='2015200'>2.02M</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='5.640182'>5.640182</td>
+                    <td data-order='0.7851191'>0.7851191</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BALI"); return false;' style='color:#00ffaa; font-weight:bold;'>BALI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='1250.0'>1,250</td>
+                    <td data-order='-2.34375'><span style='color: #ff4444;'>-2.34%</span></td>
+                    <td data-order='3200'>3.20K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='26.522385'>26.522385</td>
+                    <td data-order='1.9576092'>1.9576092</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BBTN"); return false;' style='color:#00ffaa; font-weight:bold;'>BBTN</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='1370.0'>1,370</td>
+                    <td data-order='-3.5211267605633805'><span style='color: #ff4444;'>-3.52%</span></td>
+                    <td data-order='19322200'>19.32M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='5.189394'>5.189394</td>
+                    <td data-order='0.5229175'>0.5229175</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BBYB"); return false;' style='color:#00ffaa; font-weight:bold;'>BBYB</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='304.0'>304</td>
+                    <td data-order='-5.590062111801243'><span style='color: #ff4444;'>-5.59%</span></td>
+                    <td data-order='30234500'>30.23M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='7.615231'>7.615231</td>
+                    <td data-order='0.9427877'>0.9427877</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BEST"); return false;' style='color:#00ffaa; font-weight:bold;'>BEST</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='110.0'>110</td>
+                    <td data-order='0.0'><span style='color: #ff4444;'>0.00%</span></td>
+                    <td data-order='18403600'>18.40M</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='14.62766'>14.62766</td>
+                    <td data-order='0.23818031'>0.23818031</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BGTG"); return false;' style='color:#00ffaa; font-weight:bold;'>BGTG</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='123.0'>123</td>
+                    <td data-order='-1.6'><span style='color: #ff4444;'>-1.60%</span></td>
+                    <td data-order='4329700'>4.33M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='13.085107'>13.085107</td>
+                    <td data-order='0.7905443'>0.7905443</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BKSL"); return false;' style='color:#00ffaa; font-weight:bold;'>BKSL</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='102.0'>102</td>
+                    <td data-order='-5.555555555555555'><span style='color: #ff4444;'>-5.56%</span></td>
+                    <td data-order='403433100'>403.43M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='19.805824'>19.805824</td>
+                    <td data-order='1.1225692'>1.1225692</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BNBA"); return false;' style='color:#00ffaa; font-weight:bold;'>BNBA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='790.0'>790</td>
+                    <td data-order='-1.25'><span style='color: #ff4444;'>-1.25%</span></td>
+                    <td data-order='430500'>430.50K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='285.19855'>285.19855</td>
+                    <td data-order='0.8259304'>0.8259304</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BOLT"); return false;' style='color:#00ffaa; font-weight:bold;'>BOLT</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='855.0'>855</td>
+                    <td data-order='-8.064516129032258'><span style='color: #ff4444;'>-8.06%</span></td>
+                    <td data-order='165000'>165.00K</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='13.297045'>13.297045</td>
+                    <td data-order='2.1595654'>2.1595654</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BUDI"); return false;' style='color:#00ffaa; font-weight:bold;'>BUDI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='208.0'>208</td>
+                    <td data-order='-1.8867924528301887'><span style='color: #ff4444;'>-1.89%</span></td>
+                    <td data-order='108300'>108.30K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='8.77267'>8.77267</td>
+                    <td data-order='0.60213935'>0.60213935</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("CEKA"); return false;' style='color:#00ffaa; font-weight:bold;'>CEKA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='2350.0'>2,350</td>
+                    <td data-order='-0.8438818565400843'><span style='color: #ff4444;'>-0.84%</span></td>
+                    <td data-order='56100'>56.10K</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='8.333333'>8.333333</td>
+                    <td data-order='0.69472957'>0.69472957</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("CENT"); return false;' style='color:#00ffaa; font-weight:bold;'>CENT</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='101.0'>101</td>
+                    <td data-order='-2.8846153846153846'><span style='color: #ff4444;'>-2.88%</span></td>
+                    <td data-order='5965900'>5.97M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.8510782'>0.8510782</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("CTBN"); return false;' style='color:#00ffaa; font-weight:bold;'>CTBN</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='5700.0'>5,700</td>
+                    <td data-order='3.167420814479638'><span style='color: #00ffaa;'>3.17%</span></td>
+                    <td data-order='700'>700</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='12.180268'>12.180268</td>
+                    <td data-order='37012.99'>37012.99</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("DART"); return false;' style='color:#00ffaa; font-weight:bold;'>DART</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='157.0'>157</td>
+                    <td data-order='-4.848484848484849'><span style='color: #ff4444;'>-4.85%</span></td>
+                    <td data-order='2865100'>2.87M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.41736117'>0.41736117</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("DEWA"); return false;' style='color:#00ffaa; font-weight:bold;'>DEWA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='474.0'>474</td>
+                    <td data-order='-7.961165048543689'><span style='color: #ff4444;'>-7.96%</span></td>
+                    <td data-order='513066500'>513.07M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='4.233655'>4.233655</td>
+                    <td data-order='2.4483218'>2.4483218</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("DNAR"); return false;' style='color:#00ffaa; font-weight:bold;'>DNAR</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='145.0'>145</td>
+                    <td data-order='-0.684931506849315'><span style='color: #ff4444;'>-0.68%</span></td>
+                    <td data-order='779700'>779.70K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='12.652705'>12.652705</td>
+                    <td data-order='0.64501494'>0.64501494</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("DSFI"); return false;' style='color:#00ffaa; font-weight:bold;'>DSFI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='99.0'>99</td>
+                    <td data-order='-3.8834951456310676'><span style='color: #ff4444;'>-3.88%</span></td>
+                    <td data-order='5364000'>5.36M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='10.5465'>10.5465</td>
+                    <td data-order='0.6420358'>0.6420358</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("DUTI"); return false;' style='color:#00ffaa; font-weight:bold;'>DUTI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='4100.0'>4,100</td>
+                    <td data-order='-4.651162790697675'><span style='color: #ff4444;'>-4.65%</span></td>
+                    <td data-order='800'>800</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='17.985611'>17.985611</td>
+                    <td data-order='0.7001121'>0.7001121</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("DYAN"); return false;' style='color:#00ffaa; font-weight:bold;'>DYAN</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='83.0'>83</td>
+                    <td data-order='-3.488372093023256'><span style='color: #ff4444;'>-3.49%</span></td>
+                    <td data-order='3841800'>3.84M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='10.097323'>10.097323</td>
+                    <td data-order='0.50875926'>0.50875926</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("FISH"); return false;' style='color:#00ffaa; font-weight:bold;'>FISH</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='805.0'>805</td>
+                    <td data-order='-3.592814371257485'><span style='color: #ff4444;'>-3.59%</span></td>
+                    <td data-order='72400'>72.40K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='23.198847'>23.198847</td>
+                    <td data-order='23000.0'>23000.0</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("FMII"); return false;' style='color:#00ffaa; font-weight:bold;'>FMII</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='242.0'>242</td>
+                    <td data-order='-4.724409448818897'><span style='color: #ff4444;'>-4.72%</span></td>
+                    <td data-order='7400'>7.40K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='106.60793'>106.60793</td>
+                    <td data-order='2.2302501'>2.2302501</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("GWSA"); return false;' style='color:#00ffaa; font-weight:bold;'>GWSA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='154.0'>154</td>
+                    <td data-order='-1.282051282051282'><span style='color: #ff4444;'>-1.28%</span></td>
+                    <td data-order='1024200'>1.02M</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='9.92268'>9.92268</td>
+                    <td data-order='0.16640049'>0.16640049</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("IKAI"); return false;' style='color:#00ffaa; font-weight:bold;'>IKAI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='25.0'>25</td>
+                    <td data-order='-3.8461538461538463'><span style='color: #ff4444;'>-3.85%</span></td>
+                    <td data-order='16767700'>16.77M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.53190356'>0.53190356</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("INCI"); return false;' style='color:#00ffaa; font-weight:bold;'>INCI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='720.0'>720</td>
+                    <td data-order='-1.36986301369863'><span style='color: #ff4444;'>-1.37%</span></td>
+                    <td data-order='29900'>29.90K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='8.555031'>8.555031</td>
+                    <td data-order='0.31381643'>0.31381643</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("INDY"); return false;' style='color:#00ffaa; font-weight:bold;'>INDY</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='3160.0'>3,160</td>
+                    <td data-order='-14.824797843665769'><span style='color: #ff4444;'>-14.82%</span></td>
+                    <td data-order='37115800'>37.12M</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='13739.13'>13739.13</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("INPC"); return false;' style='color:#00ffaa; font-weight:bold;'>INPC</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='158.0'>158</td>
+                    <td data-order='-4.242424242424243'><span style='color: #ff4444;'>-4.24%</span></td>
+                    <td data-order='3691400'>3.69M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.8353203'>0.8353203</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("INPP"); return false;' style='color:#00ffaa; font-weight:bold;'>INPP</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='795.0'>795</td>
+                    <td data-order='0.0'><span style='color: #ff4444;'>0.00%</span></td>
+                    <td data-order='0'>0</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='133.38927'>133.38927</td>
+                    <td data-order='1.5653766'>1.5653766</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("ITMG"); return false;' style='color:#00ffaa; font-weight:bold;'>ITMG</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='24300.0'>24,300</td>
+                    <td data-order='-4.705882352941177'><span style='color: #ff4444;'>-4.71%</span></td>
+                    <td data-order='2500300'>2.50M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='8.244022'>8.244022</td>
+                    <td data-order='14387.211'>14387.211</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("JKON"); return false;' style='color:#00ffaa; font-weight:bold;'>JKON</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='76.0'>76</td>
+                    <td data-order='-3.79746835443038'><span style='color: #ff4444;'>-3.80%</span></td>
+                    <td data-order='11580900'>11.58M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='11.143695'>11.143695</td>
+                    <td data-order='0.38781446'>0.38781446</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("KARW"); return false;' style='color:#00ffaa; font-weight:bold;'>KARW</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='300.0'>300</td>
+                    <td data-order='0.0'><span style='color: #ff4444;'>0.00%</span></td>
+                    <td data-order='144800'>144.80K</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='-5454.5454'>-5454.5454</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("MAPI"); return false;' style='color:#00ffaa; font-weight:bold;'>MAPI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='1455.0'>1,455</td>
+                    <td data-order='12.355212355212355'><span style='color: #00ffaa;'>12.36%</span></td>
+                    <td data-order='115845600'>115.85M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='10.172691'>10.172691</td>
+                    <td data-order='1.648501'>1.648501</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("MBTO"); return false;' style='color:#00ffaa; font-weight:bold;'>MBTO</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='124.0'>124</td>
+                    <td data-order='-3.875968992248062'><span style='color: #ff4444;'>-3.88%</span></td>
+                    <td data-order='4140300'>4.14M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.3806226'>0.3806226</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("MDIA"); return false;' style='color:#00ffaa; font-weight:bold;'>MDIA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='130.0'>130</td>
+                    <td data-order='-14.473684210526317'><span style='color: #ff4444;'>-14.47%</span></td>
+                    <td data-order='494348500'>494.35M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='5.296179'>5.296179</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("MLPL"); return false;' style='color:#00ffaa; font-weight:bold;'>MLPL</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='100.0'>100</td>
+                    <td data-order='-4.761904761904762'><span style='color: #ff4444;'>-4.76%</span></td>
+                    <td data-order='30181600'>30.18M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.25790745'>0.25790745</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PADI"); return false;' style='color:#00ffaa; font-weight:bold;'>PADI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='111.0'>111</td>
+                    <td data-order='-9.01639344262295'><span style='color: #ff4444;'>-9.02%</span></td>
+                    <td data-order='431272400'>431.27M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='693.75'>693.75</td>
+                    <td data-order='7.6043024'>7.6043024</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PICO"); return false;' style='color:#00ffaa; font-weight:bold;'>PICO</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='158.0'>158</td>
+                    <td data-order='-3.6585365853658534'><span style='color: #ff4444;'>-3.66%</span></td>
+                    <td data-order='515500'>515.50K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='71.818184'>71.818184</td>
+                    <td data-order='0.42819008'>0.42819008</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PSAB"); return false;' style='color:#00ffaa; font-weight:bold;'>PSAB</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='510.0'>510</td>
+                    <td data-order='-8.928571428571429'><span style='color: #ff4444;'>-8.93%</span></td>
+                    <td data-order='74753000'>74.75M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='24.507448'>24.507448</td>
+                    <td data-order='42500.0'>42500.0</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PTPP"); return false;' style='color:#00ffaa; font-weight:bold;'>PTPP</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='250.0'>250</td>
+                    <td data-order='-3.8461538461538463'><span style='color: #ff4444;'>-3.85%</span></td>
+                    <td data-order='3839400'>3.84M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.49097008'>0.49097008</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("RAJA"); return false;' style='color:#00ffaa; font-weight:bold;'>RAJA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='4160.0'>4,160</td>
+                    <td data-order='-5.6689342403628125'><span style='color: #ff4444;'>-5.67%</span></td>
+                    <td data-order='17545800'>17.55M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='34.84379'>34.84379</td>
+                    <td data-order='81568.63'>81568.63</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("RIGS"); return false;' style='color:#00ffaa; font-weight:bold;'>RIGS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='685.0'>685</td>
+                    <td data-order='0.0'><span style='color: #ff4444;'>0.00%</span></td>
+                    <td data-order='168100'>168.10K</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='4.6211967'>4.6211967</td>
+                    <td data-order='9383.562'>9383.562</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("RODA"); return false;' style='color:#00ffaa; font-weight:bold;'>RODA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='77.0'>77</td>
+                    <td data-order='-9.411764705882353'><span style='color: #ff4444;'>-9.41%</span></td>
+                    <td data-order='61105000'>61.10M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.55800337'>0.55800337</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SAME"); return false;' style='color:#00ffaa; font-weight:bold;'>SAME</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='348.0'>348</td>
+                    <td data-order='2.9585798816568047'><span style='color: #00ffaa;'>2.96%</span></td>
+                    <td data-order='1314100'>1.31M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='123.40426'>123.40426</td>
+                    <td data-order='1.5706027'>1.5706027</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SDRA"); return false;' style='color:#00ffaa; font-weight:bold;'>SDRA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='266.0'>266</td>
+                    <td data-order='0.7575757575757576'><span style='color: #00ffaa;'>0.76%</span></td>
+                    <td data-order='609800'>609.80K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='24.88307'>24.88307</td>
+                    <td data-order='0.28462347'>0.28462347</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SMDM"); return false;' style='color:#00ffaa; font-weight:bold;'>SMDM</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='635.0'>635</td>
+                    <td data-order='-2.307692307692308'><span style='color: #ff4444;'>-2.31%</span></td>
+                    <td data-order='155300'>155.30K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='136.85345'>136.85345</td>
+                    <td data-order='1.3156586'>1.3156586</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SRSN"); return false;' style='color:#00ffaa; font-weight:bold;'>SRSN</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='69.0'>69</td>
+                    <td data-order='0.0'><span style='color: #ff4444;'>0.00%</span></td>
+                    <td data-order='76548100'>76.55M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='5.3696494'>5.3696494</td>
+                    <td data-order='0.5129311'>0.5129311</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SSIA"); return false;' style='color:#00ffaa; font-weight:bold;'>SSIA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='1745.0'>1,745</td>
+                    <td data-order='-3.0555555555555554'><span style='color: #ff4444;'>-3.06%</span></td>
+                    <td data-order='27849300'>27.85M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='1.457289'>1.457289</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SSMS"); return false;' style='color:#00ffaa; font-weight:bold;'>SSMS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='1390.0'>1,390</td>
+                    <td data-order='-1.76678445229682'><span style='color: #ff4444;'>-1.77%</span></td>
+                    <td data-order='6552800'>6.55M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='9.920776'>9.920776</td>
+                    <td data-order='5.8127136'>5.8127136</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("TBMS"); return false;' style='color:#00ffaa; font-weight:bold;'>TBMS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='1335.0'>1,335</td>
+                    <td data-order='-2.197802197802198'><span style='color: #ff4444;'>-2.20%</span></td>
+                    <td data-order='85300'>85.30K</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='70263.16'>70263.16</td>
+                    <td data-order='12476.636'>12476.636</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("TINS"); return false;' style='color:#00ffaa; font-weight:bold;'>TINS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='3490.0'>3,490</td>
+                    <td data-order='-14.878048780487804'><span style='color: #ff4444;'>-14.88%</span></td>
+                    <td data-order='201589100'>201.59M</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='9.643281'>9.643281</td>
+                    <td data-order='3.0912776'>3.0912776</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("TPIA"); return false;' style='color:#00ffaa; font-weight:bold;'>TPIA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='5500.0'>5,500</td>
+                    <td data-order='-3.9301310043668125'><span style='color: #ff4444;'>-3.93%</span></td>
+                    <td data-order='16048400'>16.05M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='15.10574'>15.10574</td>
+                    <td data-order='127906.97'>127906.97</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("TRIM"); return false;' style='color:#00ffaa; font-weight:bold;'>TRIM</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='560.0'>560</td>
+                    <td data-order='-4.273504273504273'><span style='color: #ff4444;'>-4.27%</span></td>
+                    <td data-order='101900'>101.90K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='6.706587'>6.706587</td>
+                    <td data-order='1.9190636'>1.9190636</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("VICO"); return false;' style='color:#00ffaa; font-weight:bold;'>VICO</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='165.0'>165</td>
+                    <td data-order='-2.941176470588235'><span style='color: #ff4444;'>-2.94%</span></td>
+                    <td data-order='194200'>194.20K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='5.2969503'>5.2969503</td>
+                    <td data-order='0.6625681'>0.6625681</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("WEHA"); return false;' style='color:#00ffaa; font-weight:bold;'>WEHA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='125.0'>125</td>
+                    <td data-order='-3.8461538461538463'><span style='color: #ff4444;'>-3.85%</span></td>
+                    <td data-order='6902500'>6.90M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='8.229098'>8.229098</td>
+                    <td data-order='0.70298177'>0.70298177</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SHIP"); return false;' style='color:#00ffaa; font-weight:bold;'>SHIP</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='3490.0'>3,490</td>
+                    <td data-order='-14.878048780487804'><span style='color: #ff4444;'>-14.88%</span></td>
+                    <td data-order='701000'>701.00K</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='27.933407'>27.933407</td>
+                    <td data-order='62321.426'>62321.426</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("IDPR"); return false;' style='color:#00ffaa; font-weight:bold;'>IDPR</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='304.0'>304</td>
+                    <td data-order='0.0'><span style='color: #ff4444;'>0.00%</span></td>
+                    <td data-order='9500'>9.50K</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='23.36664'>23.36664</td>
+                    <td data-order='0.88576025'>0.88576025</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("WSBP"); return false;' style='color:#00ffaa; font-weight:bold;'>WSBP</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='18.0'>18</td>
+                    <td data-order='-5.263157894736842'><span style='color: #ff4444;'>-5.26%</span></td>
+                    <td data-order='24279400'>24.28M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='-0.46823785'>-0.46823785</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("WOOD"); return false;' style='color:#00ffaa; font-weight:bold;'>WOOD</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='302.0'>302</td>
+                    <td data-order='-2.5806451612903225'><span style='color: #ff4444;'>-2.58%</span></td>
+                    <td data-order='1801400'>1.80M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='24.335215'>24.335215</td>
+                    <td data-order='0.42304918'>0.42304918</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("MPOW"); return false;' style='color:#00ffaa; font-weight:bold;'>MPOW</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='148.0'>148</td>
+                    <td data-order='34.54545454545455'><span style='color: #00ffaa;'>34.55%</span></td>
+                    <td data-order='182989500'>182.99M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='22.506083'>22.506083</td>
+                    <td data-order='1.1621516'>1.1621516</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("MTWI"); return false;' style='color:#00ffaa; font-weight:bold;'>MTWI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='314.0'>314</td>
+                    <td data-order='-2.484472049689441'><span style='color: #ff4444;'>-2.48%</span></td>
+                    <td data-order='4000'>4.00K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='70.72072'>70.72072</td>
+                    <td data-order='2.2196145'>2.2196145</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BTPS"); return false;' style='color:#00ffaa; font-weight:bold;'>BTPS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='1015.0'>1,015</td>
+                    <td data-order='-0.49019607843137253'><span style='color: #ff4444;'>-0.49%</span></td>
+                    <td data-order='3999700'>4.00M</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='6.4641447'>6.4641447</td>
+                    <td data-order='0.7607561'>0.7607561</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PRIM"); return false;' style='color:#00ffaa; font-weight:bold;'>PRIM</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='89.0'>89</td>
+                    <td data-order='9.876543209876543'><span style='color: #00ffaa;'>9.88%</span></td>
+                    <td data-order='525319300'>525.32M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.3200564'>0.3200564</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("MAPA"); return false;' style='color:#00ffaa; font-weight:bold;'>MAPA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='660.0'>660</td>
+                    <td data-order='5.6000000000000005'><span style='color: #00ffaa;'>5.60%</span></td>
+                    <td data-order='79914700'>79.91M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='10.152284'>10.152284</td>
+                    <td data-order='2.1586263'>2.1586263</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("LAND"); return false;' style='color:#00ffaa; font-weight:bold;'>LAND</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='91.0'>91</td>
+                    <td data-order='-8.080808080808081'><span style='color: #ff4444;'>-8.08%</span></td>
+                    <td data-order='32776800'>32.78M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='137.87878'>137.87878</td>
+                    <td data-order='0.55383116'>0.55383116</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("MOLI"); return false;' style='color:#00ffaa; font-weight:bold;'>MOLI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='272.0'>272</td>
+                    <td data-order='-6.8493150684931505'><span style='color: #ff4444;'>-6.85%</span></td>
+                    <td data-order='18419800'>18.42M</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='9.823041'>9.823041</td>
+                    <td data-order='0.58539945'>0.58539945</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("URBN"); return false;' style='color:#00ffaa; font-weight:bold;'>URBN</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='232.0'>232</td>
+                    <td data-order='9.433962264150944'><span style='color: #00ffaa;'>9.43%</span></td>
+                    <td data-order='1758700'>1.76M</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.66662455'>0.66662455</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PEHA"); return false;' style='color:#00ffaa; font-weight:bold;'>PEHA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='372.0'>372</td>
+                    <td data-order='24.832214765100673'><span style='color: #00ffaa;'>24.83%</span></td>
+                    <td data-order='13893300'>13.89M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='8.857142'>8.857142</td>
+                    <td data-order='0.75106'>0.75106</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("JAYA"); return false;' style='color:#00ffaa; font-weight:bold;'>JAYA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='133.0'>133</td>
+                    <td data-order='-8.275862068965518'><span style='color: #ff4444;'>-8.28%</span></td>
+                    <td data-order='20005900'>20.01M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='23.623446'>23.623446</td>
+                    <td data-order='0.8448307'>0.8448307</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("IPTV"); return false;' style='color:#00ffaa; font-weight:bold;'>IPTV</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='43.0'>43</td>
+                    <td data-order='-4.444444444444445'><span style='color: #ff4444;'>-4.44%</span></td>
+                    <td data-order='8183100'>8.18M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.3104962'>0.3104962</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("NZIA"); return false;' style='color:#00ffaa; font-weight:bold;'>NZIA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='156.0'>156</td>
+                    <td data-order='-9.30232558139535'><span style='color: #ff4444;'>-9.30%</span></td>
+                    <td data-order='12640300'>12.64M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='118.63117'>118.63117</td>
+                    <td data-order='0.74764204'>0.74764204</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PSGO"); return false;' style='color:#00ffaa; font-weight:bold;'>PSGO</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='200.0'>200</td>
+                    <td data-order='-0.9900990099009901'><span style='color: #ff4444;'>-0.99%</span></td>
+                    <td data-order='172000'>172.00K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='8.77193'>8.77193</td>
+                    <td data-order='1.3810819'>1.3810819</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("IFII"); return false;' style='color:#00ffaa; font-weight:bold;'>IFII</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='226.0'>226</td>
+                    <td data-order='3.669724770642202'><span style='color: #00ffaa;'>3.67%</span></td>
+                    <td data-order='333800'>333.80K</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='14.125'>14.125</td>
+                    <td data-order='1.4876251'>1.4876251</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("UCID"); return false;' style='color:#00ffaa; font-weight:bold;'>UCID</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='402.0'>402</td>
+                    <td data-order='0.5'><span style='color: #00ffaa;'>0.50%</span></td>
+                    <td data-order='2113200'>2.11M</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='1.3627582'>1.3627582</td>
+                    <td data-order='0.36141327'>0.36141327</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("GLVA"); return false;' style='color:#00ffaa; font-weight:bold;'>GLVA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='336.0'>336</td>
+                    <td data-order='-2.3255813953488373'><span style='color: #ff4444;'>-2.33%</span></td>
+                    <td data-order='2200'>2.20K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='10.221464'>10.221464</td>
+                    <td data-order='1.2294947'>1.2294947</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("INDO"); return false;' style='color:#00ffaa; font-weight:bold;'>INDO</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='164.0'>164</td>
+                    <td data-order='3.1446540880503147'><span style='color: #00ffaa;'>3.14%</span></td>
+                    <td data-order='83659500'>83.66M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='25.19201'>25.19201</td>
+                    <td data-order='0.6687981'>0.6687981</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PURA"); return false;' style='color:#00ffaa; font-weight:bold;'>PURA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='30.0'>30</td>
+                    <td data-order='-6.25'><span style='color: #ff4444;'>-6.25%</span></td>
+                    <td data-order='21287500'>21.29M</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='20.73255'>20.73255</td>
+                    <td data-order='0.37073654'>0.37073654</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("IKAN"); return false;' style='color:#00ffaa; font-weight:bold;'>IKAN</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='98.0'>98</td>
+                    <td data-order='-3.9215686274509802'><span style='color: #ff4444;'>-3.92%</span></td>
+                    <td data-order='6193200'>6.19M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='50.0'>50.0</td>
+                    <td data-order='1.0999866'>1.0999866</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("ASPI"); return false;' style='color:#00ffaa; font-weight:bold;'>ASPI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='466.0'>466</td>
+                    <td data-order='12.560386473429952'><span style='color: #00ffaa;'>12.56%</span></td>
+                    <td data-order='2311800'>2.31M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='6.341603'>6.341603</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("ESTA"); return false;' style='color:#00ffaa; font-weight:bold;'>ESTA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='206.0'>206</td>
+                    <td data-order='-4.62962962962963'><span style='color: #ff4444;'>-4.63%</span></td>
+                    <td data-order='1162300'>1.16M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='2.7629867'>2.7629867</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BESS"); return false;' style='color:#00ffaa; font-weight:bold;'>BESS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='1135.0'>1,135</td>
+                    <td data-order='-2.9914529914529915'><span style='color: #ff4444;'>-2.99%</span></td>
+                    <td data-order='12200'>12.20K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='61.351353'>61.351353</td>
+                    <td data-order='5.911766'>5.911766</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("CSMI"); return false;' style='color:#00ffaa; font-weight:bold;'>CSMI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='110.0'>110</td>
+                    <td data-order='4.761904761904762'><span style='color: #00ffaa;'>4.76%</span></td>
+                    <td data-order='89015200'>89.02M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='24.433586'>24.433586</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BBSS"); return false;' style='color:#00ffaa; font-weight:bold;'>BBSS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='166.0'>166</td>
+                    <td data-order='-4.046242774566474'><span style='color: #ff4444;'>-4.05%</span></td>
+                    <td data-order='512500'>512.50K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='3.2377608'>3.2377608</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("TRJA"); return false;' style='color:#00ffaa; font-weight:bold;'>TRJA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='131.0'>131</td>
+                    <td data-order='-5.072463768115942'><span style='color: #ff4444;'>-5.07%</span></td>
+                    <td data-order='2191400'>2.19M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='4.0774403'>4.0774403</td>
+                    <td data-order='0.5100491'>0.5100491</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("WIFI"); return false;' style='color:#00ffaa; font-weight:bold;'>WIFI</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='2300.0'>2,300</td>
+                    <td data-order='-4.166666666666666'><span style='color: #ff4444;'>-4.17%</span></td>
+                    <td data-order='14947200'>14.95M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='19.011406'>19.011406</td>
+                    <td data-order='1.6726847'>1.6726847</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("KETR"); return false;' style='color:#00ffaa; font-weight:bold;'>KETR</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='575.0'>575</td>
+                    <td data-order='3.6036036036036037'><span style='color: #00ffaa;'>3.60%</span></td>
+                    <td data-order='299165800'>299.17M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='6.2034736'>6.2034736</td>
+                    <td data-order='1.4063528'>1.4063528</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("DGNS"); return false;' style='color:#00ffaa; font-weight:bold;'>DGNS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='288.0'>288</td>
+                    <td data-order='6.666666666666667'><span style='color: #00ffaa;'>6.67%</span></td>
+                    <td data-order='4043400'>4.04M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='5.5553412'>5.5553412</td>
+                    <td data-order='1.7647923'>1.7647923</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SNLK"); return false;' style='color:#00ffaa; font-weight:bold;'>SNLK</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='238.0'>238</td>
+                    <td data-order='0.0'><span style='color: #ff4444;'>0.00%</span></td>
+                    <td data-order='12562300'>12.56M</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.6596891'>0.6596891</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("LUCY"); return false;' style='color:#00ffaa; font-weight:bold;'>LUCY</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='1530.0'>1,530</td>
+                    <td data-order='-9.734513274336283'><span style='color: #ff4444;'>-9.73%</span></td>
+                    <td data-order='463700'>463.70K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='104.60823'>104.60823</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("MASB"); return false;' style='color:#00ffaa; font-weight:bold;'>MASB</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='3180.0'>3,180</td>
+                    <td data-order='-1.2422360248447204'><span style='color: #ff4444;'>-1.24%</span></td>
+                    <td data-order='10000'>10.00K</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='21.368095'>21.368095</td>
+                    <td data-order='1.0806116'>1.0806116</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BMHS"); return false;' style='color:#00ffaa; font-weight:bold;'>BMHS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='194.0'>194</td>
+                    <td data-order='4.864864864864865'><span style='color: #00ffaa;'>4.86%</span></td>
+                    <td data-order='18037200'>18.04M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='138.57143'>138.57143</td>
+                    <td data-order='0.85596794'>0.85596794</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("FLMC"); return false;' style='color:#00ffaa; font-weight:bold;'>FLMC</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='170.0'>170</td>
+                    <td data-order='-2.857142857142857'><span style='color: #ff4444;'>-2.86%</span></td>
+                    <td data-order='278700'>278.70K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='10.538714'>10.538714</td>
+                    <td data-order='6.4281936'>6.4281936</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BINO"); return false;' style='color:#00ffaa; font-weight:bold;'>BINO</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='122.0'>122</td>
+                    <td data-order='-1.6129032258064515'><span style='color: #ff4444;'>-1.61%</span></td>
+                    <td data-order='1527000'>1.53M</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='21.809082'>21.809082</td>
+                    <td data-order='0.686392'>0.686392</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("ADMR"); return false;' style='color:#00ffaa; font-weight:bold;'>ADMR</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='1825.0'>1,825</td>
+                    <td data-order='-2.406417112299465'><span style='color: #ff4444;'>-2.41%</span></td>
+                    <td data-order='29909500'>29.91M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='14.814514'>14.814514</td>
+                    <td data-order='45625.0'>45625.0</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("NETV"); return false;' style='color:#00ffaa; font-weight:bold;'>NETV</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='88.0'>88</td>
+                    <td data-order='-4.3478260869565215'><span style='color: #ff4444;'>-4.35%</span></td>
+                    <td data-order='42344300'>42.34M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='8.646949'>8.646949</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SICO"); return false;' style='color:#00ffaa; font-weight:bold;'>SICO</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='124.0'>124</td>
+                    <td data-order='-2.3622047244094486'><span style='color: #ff4444;'>-2.36%</span></td>
+                    <td data-order='8294300'>8.29M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='13.067762'>13.067762</td>
+                    <td data-order='0.8845265'>0.8845265</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("OLIV"); return false;' style='color:#00ffaa; font-weight:bold;'>OLIV</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='57.0'>57</td>
+                    <td data-order='-1.7241379310344827'><span style='color: #ff4444;'>-1.72%</span></td>
+                    <td data-order='2763300'>2.76M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='62.431545'>62.431545</td>
+                    <td data-order='2.5614524'>2.5614524</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SWID"); return false;' style='color:#00ffaa; font-weight:bold;'>SWID</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='108.0'>108</td>
+                    <td data-order='-2.7027027027027026'><span style='color: #ff4444;'>-2.70%</span></td>
+                    <td data-order='2021500'>2.02M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='2.1130068'>2.1130068</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("CHEM"); return false;' style='color:#00ffaa; font-weight:bold;'>CHEM</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='89.0'>89</td>
+                    <td data-order='-5.319148936170213'><span style='color: #ff4444;'>-5.32%</span></td>
+                    <td data-order='28799700'>28.80M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='1.3046792'>1.3046792</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("CRAB"); return false;' style='color:#00ffaa; font-weight:bold;'>CRAB</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='210.0'>210</td>
+                    <td data-order='-0.9433962264150944'><span style='color: #ff4444;'>-0.94%</span></td>
+                    <td data-order='997800'>997.80K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='1.7836062'>1.7836062</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PRAY"); return false;' style='color:#00ffaa; font-weight:bold;'>PRAY</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='770.0'>770</td>
+                    <td data-order='4.761904761904762'><span style='color: #00ffaa;'>4.76%</span></td>
+                    <td data-order='12300'>12.30K</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='68.0212'>68.0212</td>
+                    <td data-order='3.3255017'>3.3255017</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("NINE"); return false;' style='color:#00ffaa; font-weight:bold;'>NINE</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='131.0'>131</td>
+                    <td data-order='-9.655172413793103'><span style='color: #ff4444;'>-9.66%</span></td>
+                    <td data-order='77489800'>77.49M</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='8.613321'>8.613321</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("ELIT"); return false;' style='color:#00ffaa; font-weight:bold;'>ELIT</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='206.0'>206</td>
+                    <td data-order='0.0'><span style='color: #ff4444;'>0.00%</span></td>
+                    <td data-order='25675200'>25.68M</td>
+                    <td>Ya 🔥</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='2.6379142'>2.6379142</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("IRSX"); return false;' style='color:#00ffaa; font-weight:bold;'>IRSX</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='410.0'>410</td>
+                    <td data-order='-5.963302752293578'><span style='color: #ff4444;'>-5.96%</span></td>
+                    <td data-order='41180800'>41.18M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='107.61155'>107.61155</td>
+                    <td data-order='1.8981217'>1.8981217</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PACK"); return false;' style='color:#00ffaa; font-weight:bold;'>PACK</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='1'><span class='buy'>BUY 🚀</span></td>
+                    <td data-order='252.0'>252</td>
+                    <td data-order='-0.7874015748031495'><span style='color: #ff4444;'>-0.79%</span></td>
+                    <td data-order='219212600'>219.21M</td>
+                    <td>Tidak</td>
+                    <td>Hijau 🟢</td>
+                    <td data-order='12.656957'>12.656957</td>
+                    <td data-order='3.6904695'>3.6904695</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("HAJJ"); return false;' style='color:#00ffaa; font-weight:bold;'>HAJJ</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='137.0'>137</td>
+                    <td data-order='-1.4388489208633095'><span style='color: #ff4444;'>-1.44%</span></td>
+                    <td data-order='8384600'>8.38M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='1.5159395'>1.5159395</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PIPA"); return false;' style='color:#00ffaa; font-weight:bold;'>PIPA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='140.0'>140</td>
+                    <td data-order='-1.4084507042253522'><span style='color: #ff4444;'>-1.41%</span></td>
+                    <td data-order='230212800'>230.21M</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='113.82114'>113.82114</td>
+                    <td data-order='3.206523'>3.206523</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("RAAM"); return false;' style='color:#00ffaa; font-weight:bold;'>RAAM</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='216.0'>216</td>
+                    <td data-order='-2.7027027027027026'><span style='color: #ff4444;'>-2.70%</span></td>
+                    <td data-order='399000'>399.00K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='1.1352587'>1.1352587</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("VKTR"); return false;' style='color:#00ffaa; font-weight:bold;'>VKTR</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='870.0'>870</td>
+                    <td data-order='-5.434782608695652'><span style='color: #ff4444;'>-5.43%</span></td>
+                    <td data-order='58620000'>58.62M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='36.741417'>36.741417</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("CRSN"); return false;' style='color:#00ffaa; font-weight:bold;'>CRSN</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='116.0'>116</td>
+                    <td data-order='-1.694915254237288'><span style='color: #ff4444;'>-1.69%</span></td>
+                    <td data-order='474600'>474.60K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='1.4494203'>1.4494203</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("ACRO"); return false;' style='color:#00ffaa; font-weight:bold;'>ACRO</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='74.0'>74</td>
+                    <td data-order='-2.631578947368421'><span style='color: #ff4444;'>-2.63%</span></td>
+                    <td data-order='3185100'>3.19M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='1.4110826'>1.4110826</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("GRPH"); return false;' style='color:#00ffaa; font-weight:bold;'>GRPH</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='65.0'>65</td>
+                    <td data-order='-1.5151515151515151'><span style='color: #ff4444;'>-1.52%</span></td>
+                    <td data-order='104816100'>104.82M</td>
+                    <td>Ya 🔥</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='0.84326875'>0.84326875</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("SMGA"); return false;' style='color:#00ffaa; font-weight:bold;'>SMGA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='91.0'>91</td>
+                    <td data-order='-3.1914893617021276'><span style='color: #ff4444;'>-3.19%</span></td>
+                    <td data-order='10637500'>10.64M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='1.8631124'>1.8631124</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("DOSS"); return false;' style='color:#00ffaa; font-weight:bold;'>DOSS</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='150.0'>150</td>
+                    <td data-order='-2.5974025974025974'><span style='color: #ff4444;'>-2.60%</span></td>
+                    <td data-order='766800'>766.80K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='1.2503334'>1.2503334</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("NAIK"); return false;' style='color:#00ffaa; font-weight:bold;'>NAIK</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='101.0'>101</td>
+                    <td data-order='-4.716981132075472'><span style='color: #ff4444;'>-4.72%</span></td>
+                    <td data-order='17878200'>17.88M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='12.625'>12.625</td>
+                    <td data-order='1.5942166'>1.5942166</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("CBDK"); return false;' style='color:#00ffaa; font-weight:bold;'>CBDK</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='4620.0'>4,620</td>
+                    <td data-order='-6.666666666666667'><span style='color: #ff4444;'>-6.67%</span></td>
+                    <td data-order='5373100'>5.37M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='14.705882'>14.705882</td>
+                    <td data-order='2.7550197'>2.7550197</td>
+                    <td>Downtrend 📉</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("CDIA"); return false;' style='color:#00ffaa; font-weight:bold;'>CDIA</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='1035.0'>1,035</td>
+                    <td data-order='-4.166666666666666'><span style='color: #ff4444;'>-4.17%</span></td>
+                    <td data-order='77792500'>77.79M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='73.50852'>73.50852</td>
+                    <td data-order='115000.01'>115000.01</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("BLOG"); return false;' style='color:#00ffaa; font-weight:bold;'>BLOG</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='394.0'>394</td>
+                    <td data-order='-1.0050251256281406'><span style='color: #ff4444;'>-1.01%</span></td>
+                    <td data-order='633600'>633.60K</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='8.763346'>8.763346</td>
+                    <td data-order='2.0261548'>2.0261548</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+                <tr>
+                    <td><a href='#' onclick='openWidget("PJHB"); return false;' style='color:#00ffaa; font-weight:bold;'>PJHB</a></td>
+                    <td>2026-05-08</td>
+                    <td data-order='0'><span class='sell'>SELL ⚠️</span></td>
+                    <td data-order='226.0'>226</td>
+                    <td data-order='-5.042016806722689'><span style='color: #ff4444;'>-5.04%</span></td>
+                    <td data-order='5003900'>5.00M</td>
+                    <td>Tidak</td>
+                    <td>Merah 🔴</td>
+                    <td data-order='0'>N/A</td>
+                    <td data-order='2.007818'>2.007818</td>
+                    <td>Uptrend 📈</td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+
+    <div id="tv-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-modal-btn">&times;</span>
+            <div id="tv-widget-container" style="height: 100%; width: 100%;"></div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#screenerTable').DataTable({
+                "pageLength": 50,
+                "order": [[ 1, "desc" ]],
+                "language": { "search": "Cari Saham:", "lengthMenu": "Tampilkan _MENU_ data" }
+            });
+        });
+
+        function openWidget(ticker) {
+            document.getElementById('tv-modal').style.display = "block";
+            new TradingView.widget({
+                "autosize": true, "symbol": "IDX:" + ticker, "interval": "D", "timezone": "Asia/Jakarta",
+                "theme": "dark", "style": "1", "locale": "id", "container_id": "tv-widget-container",
+                "studies": [ { "id": "Aroon@tv-basicstudies", "inputs": { "length": 8 } }, "Stochastic@tv-basicstudies" ]
+            });
+        }
+
+        const modal = document.getElementById('tv-modal');
+        const closeBtn = document.getElementById('close-modal-btn');
+        closeBtn.onclick = function() { modal.style.display = "none"; document.getElementById('tv-widget-container').innerHTML = ''; }
+        window.onclick = function(event) { if (event.target == modal) { modal.style.display = "none"; document.getElementById('tv-widget-container').innerHTML = ''; } }
+    </script>
+</body>
+</html>
