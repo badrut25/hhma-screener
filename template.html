@@ -32,17 +32,16 @@
         table.dataTable thead th {
             background-color: #2a2e39 !important;
             color: #00ffaa !important;
-            white-space: nowrap; /* Teks header tidak pecah */
+            white-space: nowrap; 
             padding: 15px !important;
             border-bottom: 1px solid #3d4352 !important;
         }
         table.dataTable tbody td {
-            white-space: nowrap; /* Teks isi tidak pecah */
+            white-space: nowrap; 
             padding: 12px 15px !important;
             border-bottom: 1px solid #2a2e39 !important;
             text-align: center !important;
         }
-        /* Style untuk search box DataTables */
         .dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select {
             color: white !important;
             background-color: #2a2e39 !important;
@@ -53,7 +52,7 @@
         /* MODAL & FIX TOMBOL CLOSE */
         .modal {
             display: none; position: fixed; 
-            z-index: 9999; /* Z-Index sangat tinggi agar di depan */
+            z-index: 9999; 
             left: 0; top: 0; width: 100%; height: 100%; 
             background-color: rgba(0,0,0,0.9);
         }
@@ -62,7 +61,7 @@
             margin: 2% auto; padding: 10px;
             border: 1px solid #00ffaa; border-radius: 8px;
             width: 90%; height: 85vh;
-            position: relative; /* Penting untuk posisi tombol X */
+            position: relative; 
         }
         .close {
             position: absolute; right: 15px; top: 5px;
@@ -79,7 +78,7 @@
 <body>
     <div class="container">
         <h1>👑 HHMA Strategy Screener</h1>
-        <div class="subtitle">Shift + Klik pada Header untuk Multiple Sort | Klik Ticker untuk Chart</div>
+        <div class="subtitle">Tahan SHIFT + Klik Header untuk Multiple Sort | Klik Ticker untuk Buka Chart</div>
         
         </div>
 
@@ -91,11 +90,11 @@
     </div>
 
     <script>
-        // 1. INISIALISASI DATATABLES (MULTIPLE SORT)
+        // 1. INISIALISASI DATATABLES (MULTIPLE SORT & PENCARIAN)
         $(document).ready(function() {
             $('table').DataTable({
                 "pageLength": 50,
-                "order": [[ 1, "desc" ]], // Default sort by Tanggal
+                "order": [[ 1, "desc" ]], // Default urut berdasarkan Tanggal
                 "language": {
                     "search": "Cari Saham:",
                     "lengthMenu": "Tampilkan _MENU_ data"
@@ -103,7 +102,7 @@
             });
         });
 
-        // 2. FUNGSI WIDGET TRADINGVIEW + INDIKATOR AROON & STOCHASTIC
+        // 2. WIDGET TRADINGVIEW + INDIKATOR AROON & STOCHASTIC
         function openWidget(ticker) {
             document.getElementById('tv-modal').style.display = "block";
             new TradingView.widget({
@@ -116,22 +115,19 @@
                 "locale": "id",
                 "container_id": "tv-widget-container",
                 "studies": [
-                    {
-                        "id": "Aroon@tv-basicstudies",
-                        "inputs": { "length": 8 }
-                    },
+                    { "id": "Aroon@tv-basicstudies", "inputs": { "length": 8 } },
                     "Stochastic@tv-basicstudies"
                 ]
             });
         }
 
-        // 3. PERBAIKAN TOMBOL CLOSE
+        // 3. LOGIKA TOMBOL CLOSE MODAL
         const modal = document.getElementById('tv-modal');
         const closeBtn = document.getElementById('close-modal-btn');
 
         closeBtn.onclick = function() {
             modal.style.display = "none";
-            document.getElementById('tv-widget-container').innerHTML = '';
+            document.getElementById('tv-widget-container').innerHTML = ''; // Matikan chart
         }
 
         window.onclick = function(event) {
