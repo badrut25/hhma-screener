@@ -4,7 +4,7 @@ import numpy as np
 import os
 
 class Config:
-    # TICKERS list bisa Anda tambahkan di sini
+    # Silakan ganti/tambah daftar ratusan saham Anda di sini:
     TICKERS1 = ["BBCA", "BBRI", "BMRI", "BREN", "TLDN", "MTMH", "WINR", "IBOS", "OLIV", "ASHA"]
     TICKERS = [
         "AALI", "ABBA", "ABDA", "ABMM", "ACES", "ACST", "ADES", "ADHI", "ADMF", "ADMG", "ADRO", "AGII", "AGRO", "AGRS",
@@ -124,9 +124,11 @@ class StockAnalyzer:
         self.df['EMA9'] = Indicators.calc_ema(self.df['Close'], 9)
         self.df['EMA21'] = Indicators.calc_ema(self.df['Close'], 21)
         self.df['SMA20_Vol'] = self.df['Volume'].rolling(20).mean()
+        
         self.df['isBullish'] = self.df['HHMA'] > self.df['HHMA'].shift(1)
         self.df['turned_bullish'] = self.df['isBullish'] & (~self.df['isBullish'].shift(1).fillna(False))
         self.df['turned_bearish'] = (~self.df['isBullish']) & (self.df['isBullish'].shift(1).fillna(False))
+        
         self.df['cond_buy'] = self.df['turned_bullish'] & (self.df['Close'] > self.df['HHMA'])
         self.df['cond_sell'] = self.df['turned_bearish']
 
@@ -147,13 +149,14 @@ class StockAnalyzer:
         last = self.df.iloc[-1]
         prev = self.df.iloc[-2]
         
-        # Format Link
+        # Link interaktif TradingView
         ticker_link = f"<a href='#' onclick='openWidget(\"{self.ticker}\"); return false;' style='color:#00ffaa; text-decoration:none;'>{self.ticker}</a>"
         icon_svg = "<svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='#888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'></path><polyline points='15 3 21 3 21 9'></polyline><line x1='10' y1='14' x2='21' y2='3'></line></svg>"
         tv_icon = f"<a href='https://id.tradingview.com/chart/?symbol=IDX:{self.ticker}' target='_blank' style='margin-left:5px;'>{icon_svg}</a>"
         
         tanggal = self.df.index[-1].strftime('%Y-%m-%d')
         pola = "<span class='buy-text'>BUY 🚀</span>" if last['cond_buy'] else "<span class='sell-text'>SELL ⚠️</span>"
+        sort_pola = 1 if last['cond_buy'] else 0
         
         pct_change = ((last['Close'] - prev['Close']) / prev['Close']) * 100
         pct_color = "#00ffaa" if pct_change > 0 else "#ff4444"
@@ -168,12 +171,12 @@ class StockAnalyzer:
         is_spike = vol > (last['SMA20_Vol'] * 1.5)
         per, pbv = self.get_fundamentals()
         
-        # data-order digunakan DataTables untuk sorting angka dibalik teks
+        # Atribut data-order ditambahkan agar fitur sort membaca angka aslinya, bukan hurufnya
         return f"""
         <tr>
             <td>{ticker_link} {tv_icon}</td>
             <td>{tanggal}</td>
-            <td>{pola}</td>
+            <td data-order='{sort_pola}'>{pola}</td>
             <td data-order='{last['Close']}'>{last['Close']:,.0f}</td>
             <td data-order='{pct_change}'>{pct_str}</td>
             <td data-order='{vol}'>{vol_str}</td>
@@ -200,9 +203,9 @@ class ScreenerApp:
                     self.rows_html += analyzer.generate_table_row()
                     self.count += 1
             except Exception as e:
-                print(f"Error {ticker}: {e}")
+                pass # Lanjut ke saham berikutnya jika error
 
-        # Gabungkan semua baris ke dalam struktur tabel utuh
+        # Struktur HTML khusus untuk DataTables
         table_full = f"""
         <table id='screenerTable' class='display'>
             <thead>
@@ -227,7 +230,7 @@ class ScreenerApp:
         """
         
         if self.count == 0:
-            table_full = "<h3 style='text-align:center; color:#888;'>Tidak ada sinyal hari ini.</h3>"
+            table_full = "<h3 style='text-align:center; color:#888;'>Tidak ada sinyal BUY/SELL hari ini.</h3>"
             
         self.inject_to_html(table_full)
 
