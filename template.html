@@ -4,102 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>👑 Stock Screeners - HHMA</title>
-    <!-- Script TradingView Bawaan -->
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+
     <style>
         body { 
-            background-color: #131722; 
-            color: white; 
-            font-family: Arial, sans-serif; 
-            padding: 20px; 
-            margin: 0;
+            background-color: #131722; color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 20px; margin: 0;
         }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            overflow-x: auto;
-        }
-        h1 { text-align: center; color: #00ffaa; }
-        .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+        .container { max-width: 1400px; margin: auto; }
+        h1 { text-align: center; color: #00ffaa; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 0.9em; }
         
-        /* DESAIN TABEL */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #1e222d;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        /* TABEL LEBAR & TEKS TIDAK PECAH */
+        table.dataTable {
+            width: 100% !important;
+            background-color: #1e222d !important;
+            color: white !important;
             border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 40px;
+            border: none !important;
         }
-        th, td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #2a2e39;
+        table.dataTable thead th {
+            background-color: #2a2e39 !important;
+            color: #00ffaa !important;
+            white-space: nowrap; /* Teks header tidak pecah */
+            padding: 15px !important;
+            border-bottom: 1px solid #3d4352 !important;
         }
-        th {
-            background-color: #2a2e39;
-            color: #00ffaa;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 1px;
-            cursor: pointer; /* Indikator bisa diklik */
-            user-select: none;
+        table.dataTable tbody td {
+            white-space: nowrap; /* Teks isi tidak pecah */
+            padding: 12px 15px !important;
+            border-bottom: 1px solid #2a2e39 !important;
+            text-align: center !important;
         }
-        th:hover { background-color: #363c4d; }
-        tr:hover { background-color: #293040; transition: 0.3s; }
-        .buy-text { color: #00ffaa; font-weight: bold; }
-        .sell-text { color: #ff4444; font-weight: bold; }
+        /* Style untuk search box DataTables */
+        .dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select {
+            color: white !important;
+            background-color: #2a2e39 !important;
+            border: 1px solid #3d4352 !important;
+            padding: 5px; border-radius: 4px;
+        }
 
-        /* DESAIN MODAL (POPUP TRADINGVIEW) */
+        /* MODAL & FIX TOMBOL CLOSE */
         .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; top: 0; 
-            width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.8);
+            display: none; position: fixed; 
+            z-index: 9999; /* Z-Index sangat tinggi agar di depan */
+            left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.9);
         }
         .modal-content {
             background-color: #1e222d;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #00ffaa;
-            border-radius: 8px;
-            width: 80%;
-            height: 70vh;
+            margin: 2% auto; padding: 10px;
+            border: 1px solid #00ffaa; border-radius: 8px;
+            width: 90%; height: 85vh;
+            position: relative; /* Penting untuk posisi tombol X */
         }
         .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
+            position: absolute; right: 15px; top: 5px;
+            color: #ff4444; font-size: 35px; font-weight: bold;
+            cursor: pointer; z-index: 10001;
+            background: #1e222d; padding: 0 10px; border-radius: 50%;
         }
-        .close:hover { color: #00ffaa; }
+        .close:hover { color: #fff; background: #ff4444; }
+
+        .buy-text { color: #00ffaa; font-weight: bold; }
+        .sell-text { color: #ff4444; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>👑 HHMA Strategy Screener</h1>
-        <div class="subtitle">Klik Header Tabel untuk Sorting | Klik Ticker untuk Chart TradingView</div>
+        <div class="subtitle">Shift + Klik pada Header untuk Multiple Sort | Klik Ticker untuk Chart</div>
         
-        <!-- TABLE_GOES_HERE -->
-        
-    </div>
+        </div>
 
-    <!-- MODAL WIDGET TRADINGVIEW -->
     <div id="tv-modal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" id="close-modal-btn">&times;</span>
             <div id="tv-widget-container" style="height: 100%; width: 100%;"></div>
         </div>
     </div>
 
-    <!-- SCRIPT JAVASCRIPT UNTUK SORTING & MODAL -->
     <script>
-        // 1. FUNGSI WIDGET TRADINGVIEW
+        // 1. INISIALISASI DATATABLES (MULTIPLE SORT)
+        $(document).ready(function() {
+            $('table').DataTable({
+                "pageLength": 50,
+                "order": [[ 1, "desc" ]], // Default sort by Tanggal
+                "language": {
+                    "search": "Cari Saham:",
+                    "lengthMenu": "Tampilkan _MENU_ data"
+                }
+            });
+        });
+
+        // 2. FUNGSI WIDGET TRADINGVIEW + INDIKATOR AROON & STOCHASTIC
         function openWidget(ticker) {
             document.getElementById('tv-modal').style.display = "block";
             new TradingView.widget({
@@ -110,65 +114,30 @@
                 "theme": "dark",
                 "style": "1",
                 "locale": "id",
-                "enable_publishing": false,
-                "hide_top_toolbar": false,
-                "hide_legend": false,
-                "save_image": false,
-                "container_id": "tv-widget-container"
+                "container_id": "tv-widget-container",
+                "studies": [
+                    {
+                        "id": "Aroon@tv-basicstudies",
+                        "inputs": { "length": 8 }
+                    },
+                    "Stochastic@tv-basicstudies"
+                ]
             });
         }
 
-        function closeModal() {
-            document.getElementById('tv-modal').style.display = "none";
-            document.getElementById('tv-widget-container').innerHTML = ''; // Hapus chart lama
+        // 3. PERBAIKAN TOMBOL CLOSE
+        const modal = document.getElementById('tv-modal');
+        const closeBtn = document.getElementById('close-modal-btn');
+
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+            document.getElementById('tv-widget-container').innerHTML = '';
         }
 
-        // 2. FUNGSI SORTING TABEL (MEMBACA DATA-VALUE TERSEMBUNYI)
-        function sortTable(n) {
-            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-            table = document.querySelector("table");
-            switching = true;
-            dir = "asc"; 
-            
-            while (switching) {
-                switching = false;
-                rows = table.rows;
-                
-                for (i = 1; i < (rows.length - 1); i++) {
-                    shouldSwitch = false;
-                    x = rows[i].getElementsByTagName("TD")[n];
-                    y = rows[i + 1].getElementsByTagName("TD")[n];
-                    
-                    // Ambil angka mentah dari data-value (jika ada), jika tidak ambil teks biasa
-                    let xVal = x.getAttribute("data-value") !== null ? x.getAttribute("data-value") : x.textContent.toLowerCase();
-                    let yVal = y.getAttribute("data-value") !== null ? y.getAttribute("data-value") : y.textContent.toLowerCase();
-                    
-                    // Ubah jadi angka (float) agar desimal/minus dibaca dengan benar
-                    let xNum = parseFloat(xVal);
-                    let yNum = parseFloat(yVal);
-                    
-                    if (!isNaN(xNum) && !isNaN(yNum)) {
-                        xVal = xNum;
-                        yVal = yNum;
-                    }
-                    
-                    if (dir == "asc") {
-                        if (xVal > yVal) { shouldSwitch = true; break; }
-                    } else {
-                        if (xVal < yVal) { shouldSwitch = true; break; }
-                    }
-                }
-                
-                if (shouldSwitch) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                    switchcount ++; 
-                } else {
-                    if (switchcount == 0 && dir == "asc") {
-                        dir = "desc";
-                        switching = true;
-                    }
-                }
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                document.getElementById('tv-widget-container').innerHTML = '';
             }
         }
     </script>
