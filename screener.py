@@ -1,12 +1,135 @@
-import yfinance as yf
-import pandas as pd
 import numpy as np
-import os
+import pandas as pd
+import yfinance as yf
+from datetime import datetime
 
-class Config:
-    # Silakan ganti/tambah daftar ratusan saham Anda di sini:
-    TICKERS1 = ["BBCA", "BBRI", "BMRI", "BREN", "TLDN", "MTMH", "WINR", "IBOS", "OLIV", "ASHA"]
-    TICKERS = [
+# ==========================================
+# 1. RUMUS INDIKATOR HHMA & EMA
+# ==========================================
+def calc_hhma(src_series, length=24, tension=2.0):
+    halfLen = max(1, int(np.floor(length / 2)))
+    sqrtLen = max(1, int(np.floor(np.sqrt(length))))
+    def f_sinh_weight(series, l, t):
+        weights = []
+        for i in range(l):
+            x = (l - i) / l * t
+            w = (np.exp(x) - np.exp(-x)) / 2
+            weights.append(w)
+        weights = np.array(weights)
+        weights = weights / np.sum(weights)
+        return series.rolling(window=l).apply(lambda vals: np.dot(vals[::-1], weights), raw=True)
+    fastSinh = f_sinh_weight(src_series, halfLen, tension)
+    slowSinh = f_sinh_weight(src_series, length, tension)
+    rawHull = 2 * fastSinh - slowSinh
+    return f_sinh_weight(rawHull, sqrtLen, tension)
+
+def calc_ema(src_series, length):
+    return src_series.ewm(span=length, adjust=False).mean()
+
+# ==========================================
+# 2. MESIN SCREENER (PENCARI SINYAL)
+# ==========================================
+def run_screener(tickers):
+    rows_html = ""
+    count = 0
+    
+    for ticker in tickers:
+        try:
+            yf_ticker = f"{ticker}.JK"
+            df = yf.download(yf_ticker, period="6mo", interval="1d", progress=False)
+            
+            if df.empty or len(df) < 30: 
+                continue
+            
+            # Format Kolom Yahoo Finance Terbaru
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = df.columns.get_level_values(0)
+            
+            # Hitung Indikator
+            df['HHMA'] = calc_hhma(df['Close'])
+            df['EMA9'] = calc_ema(df['Close'], 9)
+            df['EMA21'] = calc_ema(df['Close'], 21)
+            df['SMA20_Vol'] = df['Volume'].rolling(20).mean()
+            
+            df['isBullish'] = df['HHMA'] > df['HHMA'].shift(1)
+            df['turned_bullish'] = df['isBullish'] & (~df['isBullish'].shift(1).fillna(False))
+            df['turned_bearish'] = (~df['isBullish']) & (df['isBullish'].shift(1).fillna(False))
+            
+            df['cond_buy'] = df['turned_bullish'] & (df['Close'] > df['HHMA'])
+            df['cond_sell'] = df['turned_bearish']
+            
+            last = df.iloc[-1]
+            prev = df.iloc[-2]
+            
+            # Jika ada sinyal di hari terakhir
+            if last['cond_buy'] or last['cond_sell']:
+                # Tarik Data Fundamental Cepat
+                try:
+                    info = yf.Ticker(yf_ticker).info
+                    per = info.get('trailingPE', 0)
+                    pbv = info.get('priceToBook', 0)
+                    per_val = per if isinstance(per, (int, float)) else 0
+                    pbv_val = pbv if isinstance(pbv, (int, float)) else 0
+                except:
+                    per_val, pbv_val = 0, 0
+                
+                # Format Teks & Angka
+                tanggal = df.index[-1].strftime('%Y-%m-%d')
+                pola = "<span class='buy'>BUY 🚀</span>" if last['cond_buy'] else "<span class='sell'>SELL ⚠️</span>"
+                sort_pola = 1 if last['cond_buy'] else 0
+                
+                pct_change = ((last['Close'] - prev['Close']) / prev['Close']) * 100
+                pct_color = "#00ffaa" if pct_change > 0 else "#ff4444"
+                pct_str = f"<span style='color: {pct_color};'>{pct_change:.2f}%</span>"
+                
+                vol = last['Volume']
+                if vol >= 1e9: vol_str = f"{vol/1e9:.2f}B"
+                elif vol >= 1e6: vol_str = f"{vol/1e6:.2f}M"
+                elif vol >= 1e3: vol_str = f"{vol/1e3:.2f}K"
+                else: vol_str = str(vol)
+                
+                is_spike = vol > (last['SMA20_Vol'] * 1.5)
+                
+                # Link ke Widget TradingView
+                ticker_link = f"<a href='#' onclick='openWidget(\"{ticker}\"); return false;' style='color:#00ffaa; font-weight:bold;'>{ticker}</a>"
+                
+                # Masukkan ke Baris Tabel
+                rows_html += f"""
+                <tr>
+                    <td>{ticker_link}</td>
+                    <td>{tanggal}</td>
+                    <td data-order='{sort_pola}'>{pola}</td>
+                    <td data-order='{last['Close']}'>{last['Close']:,.0f}</td>
+                    <td data-order='{pct_change}'>{pct_str}</td>
+                    <td data-order='{vol}'>{vol_str}</td>
+                    <td>{'Ya 🔥' if is_spike else 'Tidak'}</td>
+                    <td>{'Hijau 🟢' if last['isBullish'] else 'Merah 🔴'}</td>
+                    <td data-order='{per_val}'>{per_val if per_val != 0 else 'N/A'}</td>
+                    <td data-order='{pbv_val}'>{pbv_val if pbv_val != 0 else 'N/A'}</td>
+                    <td>{'Uptrend 📈' if last['EMA9'] > last['EMA21'] else 'Downtrend 📉'}</td>
+                </tr>
+                """
+                count += 1
+                print(f"🎯 Sinyal ditemukan: {ticker}")
+                
+        except Exception as e:
+            pass # Lanjut jika saham error/delisting
+            
+    return rows_html, count
+
+# ==========================================
+# 3. EKSEKUSI & PEMBUATAN HTML
+# ==========================================
+# Masukkan semua daftar saham Anda di sini (tanpa .JK)
+daftar_saham1 = [
+    "AALI", "ABBA", "ABDA", "ABMM", "ACES", "ACST", "ADES", "ADHI", "ADMF", "ADMG", "ADRO", "AGII", "AGRO", "AGRS",
+    "AHAP", "AIMS", "AISA", "AKKU", "AKPI", "AKRA", "AKSI", "ALDO", "ALKA", "ALMI", "ALTO", "AMAG", "AMFG", "AMIN",
+    "AMRT", "ANJT", "ANTM", "APEX", "APIC", "APII", "APLI", "APLN", "ARGO", "ARII", "ARNA", "ARTA", "ARTI", "ARTO",
+    "ASBI", "ASDM", "ASGR", "ASII", "ASJT", "ASMI", "ASRI", "ASRM", "ASSA", "ATIC", "AUTO", "BABP", "BACA", "BAJA",
+    "BBCA", "BBRI", "BMRI", "BBNI", "BREN", "AMMN", "GOTO", "TLKM" 
+    # (Catatan: Lanjutkan paste daftar lengkap Anda ke dalam kurung siku ini)
+]
+daftar_saham = [
         "AALI", "ABBA", "ABDA", "ABMM", "ACES", "ACST", "ADES", "ADHI", "ADMF", "ADMG", "ADRO", "AGII", "AGRO", "AGRS",
         "AHAP", "AIMS", "AISA", "AKKU", "AKPI", "AKRA", "AKSI", "ALDO", "ALKA", "ALMI", "ALTO", "AMAG", "AMFG", "AMIN",
         "AMRT", "ANJT", "ANTM", "APEX", "APIC", "APII", "APLI", "APLN", "ARGO", "ARII", "ARNA", "ARTA", "ARTI", "ARTO",
@@ -78,136 +201,56 @@ class Config:
         "YUPI", "FORE", "MDLA", "DKHH", "PSAT", "CDIA", "COIN", "BLOG", "CHEK", "MERI", "ASPR", "PMUI", "EMAS", "PJHB",
         "RLCO", "SUPA"
     ]
-    PERIOD = "1y"
-    TEMPLATE_FILE = "template.html"
-    OUTPUT_FILE = "index.html"
 
-class Indicators:
-    @staticmethod
-    def calc_hhma(src_series, length=24, tension=2.0):
-        halfLen = max(1, int(np.floor(length / 2)))
-        sqrtLen = max(1, int(np.floor(np.sqrt(length))))
-        def f_sinh_weight(series, l, t):
-            weights = []
-            for i in range(l):
-                x = (l - i) / l * t
-                w = (np.exp(x) - np.exp(-x)) / 2
-                weights.append(w)
-            weights = np.array(weights)
-            weights = weights / np.sum(weights)
-            return series.rolling(window=l).apply(lambda vals: np.dot(vals[::-1], weights), raw=True)
-        fastSinh = f_sinh_weight(src_series, halfLen, tension)
-        slowSinh = f_sinh_weight(src_series, length, tension)
-        rawHull = 2 * fastSinh - slowSinh
-        return f_sinh_weight(rawHull, sqrtLen, tension)
+print("Mulai menganalisa saham...")
+tabel_baris, total_sinyal = run_screener(daftar_saham)
 
-    @staticmethod
-    def calc_ema(src_series, length):
-        return src_series.ewm(span=length, adjust=False).mean()
+if total_sinyal == 0:
+    tabel_baris = "<tr><td colspan='11' style='text-align:center;'>Tidak ada sinyal BUY/SELL di hari bursa terakhir.</td></tr>"
 
-class StockAnalyzer:
-    def __init__(self, ticker):
-        self.ticker = ticker
-        self.yf_ticker = f"{ticker}.JK"
-        self.df = pd.DataFrame()
+waktu_update = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    def fetch_data(self):
-        df = yf.download(self.yf_ticker, period=Config.PERIOD, progress=False)
-        if df.empty: return False
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = df.columns.get_level_values(0)
-        self.df = df
-        return True
+# --- TEMPLATE HTML DENGAN DATATABLES & TRADINGVIEW WIDGET ---
+html_content = f"""
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 Stock Screeners - HHMA Strategy</title>
+    
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 
-    def calculate_signals(self):
-        self.df['HHMA'] = Indicators.calc_hhma(self.df['Close'])
-        self.df['EMA9'] = Indicators.calc_ema(self.df['Close'], 9)
-        self.df['EMA21'] = Indicators.calc_ema(self.df['Close'], 21)
-        self.df['SMA20_Vol'] = self.df['Volume'].rolling(20).mean()
+    <style>
+        body {{ background-color: #131722; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; margin: 0; }}
+        .container {{ max-width: 1400px; margin: auto; }}
+        h1 {{ text-align: center; color: #00ffaa; margin-bottom: 5px; }}
+        .subtitle {{ text-align: center; color: #888; margin-bottom: 30px; font-size: 0.9em; }}
         
-        self.df['isBullish'] = self.df['HHMA'] > self.df['HHMA'].shift(1)
-        self.df['turned_bullish'] = self.df['isBullish'] & (~self.df['isBullish'].shift(1).fillna(False))
-        self.df['turned_bearish'] = (~self.df['isBullish']) & (self.df['isBullish'].shift(1).fillna(False))
-        
-        self.df['cond_buy'] = self.df['turned_bullish'] & (self.df['Close'] > self.df['HHMA'])
-        self.df['cond_sell'] = self.df['turned_bearish']
+        table.dataTable {{ width: 100% !important; background-color: #1e222d !important; color: white !important; border-radius: 8px; overflow: hidden; border: none !important; }}
+        table.dataTable thead th {{ background-color: #2a2e39 !important; color: #00ffaa !important; white-space: nowrap; padding: 15px !important; border-bottom: 1px solid #3d4352 !important; }}
+        table.dataTable tbody td {{ white-space: nowrap; padding: 12px 15px !important; border-bottom: 1px solid #2a2e39 !important; text-align: center !important; }}
+        .dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select {{ color: white !important; background-color: #2a2e39 !important; border: 1px solid #3d4352 !important; padding: 5px; border-radius: 4px; }}
 
-    def has_signal_today(self):
-        if self.df.empty: return False
-        return bool(self.df.iloc[-1]['cond_buy'] or self.df.iloc[-1]['cond_sell'])
+        /* MODAL WIDGET */
+        .modal {{ display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); }}
+        .modal-content {{ background-color: #1e222d; margin: 2% auto; padding: 10px; border: 1px solid #00ffaa; border-radius: 8px; width: 90%; height: 85vh; position: relative; }}
+        .close {{ position: absolute; right: 15px; top: 5px; color: #ff4444; font-size: 35px; font-weight: bold; cursor: pointer; z-index: 10001; background: #1e222d; padding: 0 10px; border-radius: 50%; }}
+        .close:hover {{ color: #fff; background: #ff4444; }}
 
-    def get_fundamentals(self):
-        try:
-            info = yf.Ticker(self.yf_ticker).info
-            per = info.get('trailingPE', 0)
-            pbv = info.get('priceToBook', 0)
-            return per, pbv
-        except:
-            return 0, 0
-
-    def generate_table_row(self):
-        last = self.df.iloc[-1]
-        prev = self.df.iloc[-2]
+        .buy {{ color: #00ffaa; font-weight: bold; }}
+        .sell {{ color: #ff4444; font-weight: bold; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👑 HHMA Strategy Screener</h1>
+        <div class="subtitle">Terakhir Diperbarui: {waktu_update} UTC | Tahan SHIFT + Klik Header untuk Multiple Sort</div>
         
-        # Link interaktif TradingView
-        ticker_link = f"<a href='#' onclick='openWidget(\"{self.ticker}\"); return false;' style='color:#00ffaa; text-decoration:none;'>{self.ticker}</a>"
-        icon_svg = "<svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='#888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'></path><polyline points='15 3 21 3 21 9'></polyline><line x1='10' y1='14' x2='21' y2='3'></line></svg>"
-        tv_icon = f"<a href='https://id.tradingview.com/chart/?symbol=IDX:{self.ticker}' target='_blank' style='margin-left:5px;'>{icon_svg}</a>"
-        
-        tanggal = self.df.index[-1].strftime('%Y-%m-%d')
-        pola = "<span class='buy-text'>BUY 🚀</span>" if last['cond_buy'] else "<span class='sell-text'>SELL ⚠️</span>"
-        sort_pola = 1 if last['cond_buy'] else 0
-        
-        pct_change = ((last['Close'] - prev['Close']) / prev['Close']) * 100
-        pct_color = "#00ffaa" if pct_change > 0 else "#ff4444"
-        pct_str = f"<span style='color: {pct_color};'>{pct_change:.2f}%</span>"
-        
-        vol = last['Volume']
-        if vol >= 1e9: vol_str = f"{vol/1e9:.2f}B"
-        elif vol >= 1e6: vol_str = f"{vol/1e6:.2f}M"
-        elif vol >= 1e3: vol_str = f"{vol/1e3:.2f}K"
-        else: vol_str = str(vol)
-        
-        is_spike = vol > (last['SMA20_Vol'] * 1.5)
-        per, pbv = self.get_fundamentals()
-        
-        # Atribut data-order ditambahkan agar fitur sort membaca angka aslinya, bukan hurufnya
-        return f"""
-        <tr>
-            <td>{ticker_link} {tv_icon}</td>
-            <td>{tanggal}</td>
-            <td data-order='{sort_pola}'>{pola}</td>
-            <td data-order='{last['Close']}'>{last['Close']:,.0f}</td>
-            <td data-order='{pct_change}'>{pct_str}</td>
-            <td data-order='{vol}'>{vol_str}</td>
-            <td>{'Ya 🔥' if is_spike else 'Tidak'}</td>
-            <td>{'Hijau 🟢' if last['isBullish'] else 'Merah 🔴'}</td>
-            <td data-order='{per}'>{per if per != 0 else 'N/A'}</td>
-            <td data-order='{pbv}'>{pbv if pbv != 0 else 'N/A'}</td>
-            <td>{'Uptrend 📈' if last['EMA9'] > last['EMA21'] else 'Downtrend 📉'}</td>
-        </tr>
-        """
-
-class ScreenerApp:
-    def __init__(self):
-        self.rows_html = ""
-        self.count = 0
-
-    def run(self):
-        for ticker in Config.TICKERS:
-            try:
-                analyzer = StockAnalyzer(ticker)
-                if not analyzer.fetch_data(): continue
-                analyzer.calculate_signals()
-                if analyzer.has_signal_today():
-                    self.rows_html += analyzer.generate_table_row()
-                    self.count += 1
-            except Exception as e:
-                pass # Lanjut ke saham berikutnya jika error
-
-        # Struktur HTML khusus untuk DataTables
-        table_full = f"""
-        <table id='screenerTable' class='display'>
+        <table id="screenerTable" class="display">
             <thead>
                 <tr>
                     <th>Ticker</th>
@@ -216,30 +259,55 @@ class ScreenerApp:
                     <th>Close</th>
                     <th>% Ubah</th>
                     <th>Volume</th>
-                    <th>Spike?</th>
-                    <th>Kernel</th>
+                    <th>Spike Vol?</th>
+                    <th>Warna Kernel</th>
                     <th>PER</th>
                     <th>PBV</th>
                     <th>Trend</th>
                 </tr>
             </thead>
             <tbody>
-                {self.rows_html}
+                {tabel_baris}
             </tbody>
         </table>
-        """
-        
-        if self.count == 0:
-            table_full = "<h3 style='text-align:center; color:#888;'>Tidak ada sinyal BUY/SELL hari ini.</h3>"
-            
-        self.inject_to_html(table_full)
+    </div>
 
-    def inject_to_html(self, content):
-        with open(Config.TEMPLATE_FILE, "r", encoding="utf-8") as f:
-            template = f.read()
-        final = template.replace("", content)
-        with open(Config.OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(final)
+    <div id="tv-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-modal-btn">&times;</span>
+            <div id="tv-widget-container" style="height: 100%; width: 100%;"></div>
+        </div>
+    </div>
 
-if __name__ == "__main__":
-    ScreenerApp().run()
+    <script>
+        $(document).ready(function() {{
+            $('#screenerTable').DataTable({{
+                "pageLength": 50,
+                "order": [[ 1, "desc" ]],
+                "language": {{ "search": "Cari Saham:", "lengthMenu": "Tampilkan _MENU_ data" }}
+            }});
+        }});
+
+        function openWidget(ticker) {{
+            document.getElementById('tv-modal').style.display = "block";
+            new TradingView.widget({{
+                "autosize": true, "symbol": "IDX:" + ticker, "interval": "D", "timezone": "Asia/Jakarta",
+                "theme": "dark", "style": "1", "locale": "id", "container_id": "tv-widget-container",
+                "studies": [ {{ "id": "Aroon@tv-basicstudies", "inputs": {{ "length": 8 }} }}, "Stochastic@tv-basicstudies" ]
+            }});
+        }}
+
+        const modal = document.getElementById('tv-modal');
+        const closeBtn = document.getElementById('close-modal-btn');
+        closeBtn.onclick = function() {{ modal.style.display = "none"; document.getElementById('tv-widget-container').innerHTML = ''; }}
+        window.onclick = function(event) {{ if (event.target == modal) {{ modal.style.display = "none"; document.getElementById('tv-widget-container').innerHTML = ''; }} }}
+    </script>
+</body>
+</html>
+"""
+
+# Tulis langsung ke file index.html (Tidak perlu template.html)
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print(f"Berhasil! File index.html telah digenerate dengan {total_sinyal} sinyal ditemukan.")
