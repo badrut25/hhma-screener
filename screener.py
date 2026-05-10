@@ -3,10 +3,8 @@ import pandas as pd
 import numpy as np
 import os
 
-# ==========================================
-# CLASS 1: KONFIGURASI
-# ==========================================
 class Config:
+    # TICKERS list bisa Anda tambahkan di sini
     TICKERS1 = ["BBCA", "BBRI", "BMRI", "BREN", "TLDN", "MTMH", "WINR", "IBOS", "OLIV", "ASHA"]
     TICKERS = [
         "AALI", "ABBA", "ABDA", "ABMM", "ACES", "ACST", "ADES", "ADHI", "ADMF", "ADMG", "ADRO", "AGII", "AGRO", "AGRS",
@@ -84,9 +82,6 @@ class Config:
     TEMPLATE_FILE = "template.html"
     OUTPUT_FILE = "index.html"
 
-# ==========================================
-# CLASS 2: RUMUS INDIKATOR
-# ==========================================
 class Indicators:
     @staticmethod
     def calc_hhma(src_series, length=24, tension=2.0):
@@ -101,7 +96,6 @@ class Indicators:
             weights = np.array(weights)
             weights = weights / np.sum(weights)
             return series.rolling(window=l).apply(lambda vals: np.dot(vals[::-1], weights), raw=True)
-
         fastSinh = f_sinh_weight(src_series, halfLen, tension)
         slowSinh = f_sinh_weight(src_series, length, tension)
         rawHull = 2 * fastSinh - slowSinh
@@ -111,9 +105,6 @@ class Indicators:
     def calc_ema(src_series, length):
         return src_series.ewm(span=length, adjust=False).mean()
 
-# ==========================================
-# CLASS 3: ANALISATOR SAHAM
-# ==========================================
 class StockAnalyzer:
     def __init__(self, ticker):
         self.ticker = ticker
@@ -133,11 +124,9 @@ class StockAnalyzer:
         self.df['EMA9'] = Indicators.calc_ema(self.df['Close'], 9)
         self.df['EMA21'] = Indicators.calc_ema(self.df['Close'], 21)
         self.df['SMA20_Vol'] = self.df['Volume'].rolling(20).mean()
-        
         self.df['isBullish'] = self.df['HHMA'] > self.df['HHMA'].shift(1)
         self.df['turned_bullish'] = self.df['isBullish'] & (~self.df['isBullish'].shift(1).fillna(False))
         self.df['turned_bearish'] = (~self.df['isBullish']) & (self.df['isBullish'].shift(1).fillna(False))
-        
         self.df['cond_buy'] = self.df['turned_bullish'] & (self.df['Close'] > self.df['HHMA'])
         self.df['cond_sell'] = self.df['turned_bearish']
 
@@ -146,37 +135,25 @@ class StockAnalyzer:
         return bool(self.df.iloc[-1]['cond_buy'] or self.df.iloc[-1]['cond_sell'])
 
     def get_fundamentals(self):
-        """Menarik data PER & PBV dan nilai Mentahnya (untuk fitur Sort)"""
         try:
             info = yf.Ticker(self.yf_ticker).info
-            per = info.get('trailingPE', 'N/A')
-            pbv = info.get('priceToBook', 'N/A')
-            
-            per_str = f"{per:.2f}" if isinstance(per, (int, float)) else "N/A"
-            pbv_str = f"{pbv:.2f}" if isinstance(pbv, (int, float)) else "N/A"
-            
-            # Jika tidak ada data, jadikan nilai sangat kecil (-9999) agar saat disortir ada di bawah
-            per_raw = per if isinstance(per, (int, float)) else -9999
-            pbv_raw = pbv if isinstance(pbv, (int, float)) else -9999
-            
-            return per_str, pbv_str, per_raw, pbv_raw
+            per = info.get('trailingPE', 0)
+            pbv = info.get('priceToBook', 0)
+            return per, pbv
         except:
-            return "N/A", "N/A", -9999, -9999
+            return 0, 0
 
     def generate_table_row(self):
-        """Membuat baris HTML dengan menyuntikkan data-value untuk Sorting Cerdas"""
         last = self.df.iloc[-1]
         prev = self.df.iloc[-2]
         
-        # Format Link & Icon TradingView
-        ticker_link = f"<a href='#' onclick='openWidget(\"{self.ticker}\"); return false;' style='color:#fff; text-decoration:underline;'>{self.ticker}</a>"
-        icon_svg = "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#00ffaa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'></path><polyline points='15 3 21 3 21 9'></polyline><line x1='10' y1='14' x2='21' y2='3'></line></svg>"
-        tv_icon = f"<a href='https://id.tradingview.com/chart/?symbol=IDX:{self.ticker}' target='_blank' style='margin-left:8px;' title='Buka di Web TradingView'>{icon_svg}</a>"
+        # Format Link
+        ticker_link = f"<a href='#' onclick='openWidget(\"{self.ticker}\"); return false;' style='color:#00ffaa; text-decoration:none;'>{self.ticker}</a>"
+        icon_svg = "<svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='#888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'></path><polyline points='15 3 21 3 21 9'></polyline><line x1='10' y1='14' x2='21' y2='3'></line></svg>"
+        tv_icon = f"<a href='https://id.tradingview.com/chart/?symbol=IDX:{self.ticker}' target='_blank' style='margin-left:5px;'>{icon_svg}</a>"
         
-        # Kondisi Logika
         tanggal = self.df.index[-1].strftime('%Y-%m-%d')
         pola = "<span class='buy-text'>BUY 🚀</span>" if last['cond_buy'] else "<span class='sell-text'>SELL ⚠️</span>"
-        sort_pola = 1 if last['cond_buy'] else 0
         
         pct_change = ((last['Close'] - prev['Close']) / prev['Close']) * 100
         pct_color = "#00ffaa" if pct_change > 0 else "#ff4444"
@@ -189,92 +166,77 @@ class StockAnalyzer:
         else: vol_str = str(vol)
         
         is_spike = vol > (last['SMA20_Vol'] * 1.5)
-        spike_vol = "Ya 🔥" if is_spike else "Tidak"
-        warna_kernel = "Hijau 🟢" if last['isBullish'] else "Merah 🔴"
+        per, pbv = self.get_fundamentals()
         
-        trend_up = last['EMA9'] > last['EMA21']
-        trend = "Uptrend 📈" if trend_up else "Downtrend 📉"
-        
-        per_str, pbv_str, per_raw, pbv_raw = self.get_fundamentals()
-        
-        # Setiap kolom diisi data-value=[nilai_asli] agar tabel JS menyortirnya berdasarkan logika matematika!
-        row_html = f"""
+        # data-order digunakan DataTables untuk sorting angka dibalik teks
+        return f"""
         <tr>
-            <td data-value='{self.ticker}' style='font-weight:bold;'>{ticker_link} {tv_icon}</td>
-            <td data-value='{tanggal}'>{tanggal}</td>
-            <td data-value='{sort_pola}'>{pola}</td>
-            <td data-value='{last['Close']}'>{last['Close']:,.0f}</td>
-            <td data-value='{pct_change}'>{pct_str}</td>
-            <td data-value='{vol}'>{vol_str}</td>
-            <td data-value='{1 if is_spike else 0}'>{spike_vol}</td>
-            <td data-value='{1 if last['isBullish'] else 0}'>{warna_kernel}</td>
-            <td data-value='{per_raw}'>{per_str}</td>
-            <td data-value='{pbv_raw}'>{pbv_str}</td>
-            <td data-value='{1 if trend_up else 0}'>{trend}</td>
+            <td>{ticker_link} {tv_icon}</td>
+            <td>{tanggal}</td>
+            <td>{pola}</td>
+            <td data-order='{last['Close']}'>{last['Close']:,.0f}</td>
+            <td data-order='{pct_change}'>{pct_str}</td>
+            <td data-order='{vol}'>{vol_str}</td>
+            <td>{'Ya 🔥' if is_spike else 'Tidak'}</td>
+            <td>{'Hijau 🟢' if last['isBullish'] else 'Merah 🔴'}</td>
+            <td data-order='{per}'>{per if per != 0 else 'N/A'}</td>
+            <td data-order='{pbv}'>{pbv if pbv != 0 else 'N/A'}</td>
+            <td>{'Uptrend 📈' if last['EMA9'] > last['EMA21'] else 'Downtrend 📉'}</td>
         </tr>
         """
-        return row_html
 
-# ==========================================
-# CLASS 4: MAIN APP
-# ==========================================
 class ScreenerApp:
     def __init__(self):
-        # Header Tabel ditambahkan onclick="sortTable(index)" beserta ikon Panah ↕
-        self.table_html = """
-        <table>
-            <thead>
-                <tr>
-                    <th onclick="sortTable(0)">Ticker ↕</th>
-                    <th onclick="sortTable(1)">Tanggal ↕</th>
-                    <th onclick="sortTable(2)">Pola ↕</th>
-                    <th onclick="sortTable(3)">Harga Close ↕</th>
-                    <th onclick="sortTable(4)">% Ubah ↕</th>
-                    <th onclick="sortTable(5)">Volume ↕</th>
-                    <th onclick="sortTable(6)">Spike Vol? ↕</th>
-                    <th onclick="sortTable(7)">Warna Kernel ↕</th>
-                    <th onclick="sortTable(8)">PER ↕</th>
-                    <th onclick="sortTable(9)">PBV ↕</th>
-                    <th onclick="sortTable(10)">Trend ↕</th>
-                </tr>
-            </thead>
-            <tbody>
-        """
-        self.signals_count = 0
+        self.rows_html = ""
+        self.count = 0
 
     def run(self):
-        print("Mulai Screening...")
         for ticker in Config.TICKERS:
             try:
                 analyzer = StockAnalyzer(ticker)
                 if not analyzer.fetch_data(): continue
                 analyzer.calculate_signals()
-                
                 if analyzer.has_signal_today():
-                    print(f"🎯 Sinyal Ditemukan: {ticker}")
-                    self.table_html += analyzer.generate_table_row()
-                    self.signals_count += 1
+                    self.rows_html += analyzer.generate_table_row()
+                    self.count += 1
             except Exception as e:
-                print(f"[!] Error {ticker}: {e}")
+                print(f"Error {ticker}: {e}")
 
-        self.table_html += "</tbody></table>"
+        # Gabungkan semua baris ke dalam struktur tabel utuh
+        table_full = f"""
+        <table id='screenerTable' class='display'>
+            <thead>
+                <tr>
+                    <th>Ticker</th>
+                    <th>Tanggal</th>
+                    <th>Pola</th>
+                    <th>Close</th>
+                    <th>% Ubah</th>
+                    <th>Volume</th>
+                    <th>Spike?</th>
+                    <th>Kernel</th>
+                    <th>PER</th>
+                    <th>PBV</th>
+                    <th>Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+                {self.rows_html}
+            </tbody>
+        </table>
+        """
         
-        if self.signals_count == 0:
-            self.table_html = "<h3 style='text-align:center; color:#888;'>Tidak ada sinyal BUY/SELL di hari bursa terakhir.</h3>"
+        if self.count == 0:
+            table_full = "<h3 style='text-align:center; color:#888;'>Tidak ada sinyal hari ini.</h3>"
             
-        self.inject_to_html()
+        self.inject_to_html(table_full)
 
-    def inject_to_html(self):
-        if not os.path.exists(Config.TEMPLATE_FILE): return
+    def inject_to_html(self, content):
         with open(Config.TEMPLATE_FILE, "r", encoding="utf-8") as f:
             template = f.read()
-
-        final_html = template.replace("<!-- TABLE_GOES_HERE -->", self.table_html)
-
+        final = template.replace("", content)
         with open(Config.OUTPUT_FILE, "w", encoding="utf-8") as f:
-            f.write(final_html)
-        print(f"SELESAI! Ditemukan {self.signals_count} saham.")
+            f.write(final)
 
 if __name__ == "__main__":
-    app = ScreenerApp()
-    app.run()
+    ScreenerApp().run()
